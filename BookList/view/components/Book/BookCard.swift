@@ -31,14 +31,11 @@ struct BookCard: View {
                         Spacer()
                     }
                 }.padding()
-                Image(.ironLungMoviePoster)
+                Image(.ironLung)
                     .resizable()
                     .frame(width:125,height:175)
                     .padding()
             }
-            //book info
-            
-            //book img
         }
     }
 }
