@@ -11,7 +11,7 @@ struct StartReadView: View {
     
     @State var isReading = false
     @State var isPausing = false
-    
+    @State var notes = "The resident was evil"
     var playpauseButton: String {
         if isPausing {
             return "playpause.fill"
@@ -74,17 +74,24 @@ struct StartReadView: View {
             }
             .buttonStyle(.borderedProminent)
             
+            TextEditor(text: $notes)
+                .scrollContentBackground(.hidden)
+                .background(.gray)
+                .foregroundColor(.white)
+                .frame(height: 100)
+                .padding()
+            
             HStack {
                 
                 Button("Cancel") {
                 }
-                .buttonStyle(.bordered)
+                .buttonStyle(.borderedProminent)
                 .tint(.red)
                 
                 
                 Button("Save") {
                 }
-                .buttonStyle(.bordered)
+                .buttonStyle(.borderedProminent)
             }
             
         }
