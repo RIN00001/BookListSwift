@@ -8,10 +8,22 @@
 import SwiftUI
 
 struct StartReadView: View {
+    @EnvironmentObject var dailyReadViewModel: DailyReadViewModel
+    
     
     @State var isReading = false
     @State var isPausing = false
     @State var notes = "The resident was evil"
+    @State var noteInput = ""
+    @State var timeInSeconds: Int = 0
+    @State var noteInputPresented: Bool = false
+    
+    @Binding var isReadyToRead: Bool
+    @Binding var book: Book?
+    
+    @State var timer = Timer.publish(every: 1, on: .main, in: .common)
+    
+    
     var playpauseButton: String {
         if isPausing {
             return "playpause.fill"
@@ -24,13 +36,13 @@ struct StartReadView: View {
         
         VStack(spacing: 20) {
             
-            BookCard()
+            BookCard(book: book!)
             
             VStack {
                 Text("⏱ Time a Reading Sessions")
                     .font(.body)
                 
-                Text("00:00:00")
+                Text("\(dailyReadViewModel.getHours(seconds: timeinSecond)):\(dailyReadViewModel.getMinutes(seconds: timeInSeconds)):\(dailyReadViewModel.getSeconds(seconds: timeInSeconds))")
                     .font(.system(size: 65))
                     .fontWeight(.semibold)
             }
@@ -42,6 +54,11 @@ struct StartReadView: View {
                     
                     Button(action: {
                         isPausing.toggle()
+                        if isPausing {
+                            timer = Timer.publish(every: 1, on: .main, in: .common)
+                        } else {
+                            
+                        }
                     }) {
                         Image(systemName: playpauseButton)
                             .resizable()
@@ -71,6 +88,7 @@ struct StartReadView: View {
             
             
             Button("Manage Notes") {
+                noteInputPresented = true
             }
             .buttonStyle(.borderedProminent)
             
@@ -84,21 +102,39 @@ struct StartReadView: View {
             HStack {
                 
                 Button("Cancel") {
+                    isReadyToRead.toggle()
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(.red)
                 
                 
                 Button("Save") {
+                    let newDailyRead = DailyRead(book: book!, readDate: Date(), readTimeInSeconds: timeInSeconds, note: noteInput)
+                    
+                    dailyReadViewModel
+                        .addNewDailyRead(dailyRead: newDailyRead)
+                    
+                    isReading = false
+                    isPausing = false
+                    timeInSeconds = 0
+                    noteInputPresented = false
+                    noteInput = ""
+                    
                 }
                 .buttonStyle(.borderedProminent)
             }
             
+        }.onReceive(timer, perform: {_ in
+        timeInSeconds += 1})
+        .fullScreenCover(isPresented: $noteInputPresented){
+            ReadNoteInput(note: $noteInput,
+            noteInputPresented
+                          : $noteInputPresented)
         }
         .padding()
     }
 }
 
 #Preview {
-    StartReadView()
+    StartReadView(isReadyToRead: .constant(true), )
 }

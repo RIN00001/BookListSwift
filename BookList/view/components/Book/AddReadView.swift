@@ -7,29 +7,26 @@
 
 import SwiftUI
 
-import SwiftUI
-
 struct AddReadView: View {
+    @EnvironmentObject var bookViewModel: BookViewModel
     
     @State var searchText: String = ""
     @State var showSuggestions: Bool = false
     @State var isResultEmpty: Bool = false
     @State var isReadyToRead: Bool = false
+    @State var filteredBooks: [Book] = []
+    @State var selectedBook: Book? = nil
     
     var body: some View {
         
         VStack(spacing: 10) {
             
-            
             TextField("Search for a book", text: $searchText)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .padding([.leading, .bottom, .trailing])
                 .onChange(of: searchText) {
-                    showSuggestions = !searchText.isEmpty
+                    filteredBooks = bookViewModel.filterBooks(byTitle: searchText)
                 }
-            .textFieldStyle(RoundedBorderTextFieldStyle())
-            .padding([.leading, .bottom, .trailing])
-            
             
             HStack {
                 Text("Book Info")
@@ -40,46 +37,30 @@ struct AddReadView: View {
             }
             .padding(.horizontal)
             
-            
-            if searchText.isEmpty || isResultEmpty {
-                
-                ZStack {
-                    Rectangle()
-                        .fill(Color(red: 0.973, green: 0.973, blue: 0.973))
-                        .frame(width: 360, height: 222)
-                    
-                    Text("No Book Information")
-                        .font(.body)
-                }
-            }
-            
-            
-            else if showSuggestions {
-                
-                ScrollView {
-                    VStack {
-                        
+            ScrollView {
+                VStack(spacing: 10) {
+                    ForEach(searchText.isEmpty ? bookViewModel.books : filteredBooks, id: \.self) { book in
                         Button(action: {
                             isReadyToRead = true
-                            showSuggestions = false
+                            selectedBook = book
+                            filteredBooks = []
+                            searchText = book.title
                         }) {
-                            BookCard()
+                            BookCard(book: book)
                         }
                     }
                 }
             }
             
-            
-
-            if isReadyToRead {
-                StartReadView()
-            }
-            
             Spacer()
+        }
+        .fullScreenCover(isPresented: $isReadyToRead) {
+            StartReadView()
         }
     }
 }
 
 #Preview {
     AddReadView()
+        .environmentObject(BookViewModel())
 }

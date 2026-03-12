@@ -7,6 +7,7 @@
 import SwiftUI
 
 struct BookCard: View {
+    var book: Book
     var body: some View {
         ZStack{
             Rectangle()
@@ -17,17 +18,17 @@ struct BookCard: View {
                 VStack(spacing: 15){
                     HStack{
                         Text("Title: ")
-                        Text("Iron Lung ")
+                        Text(book.title)
                         Spacer()
                     }
                     HStack{
                         Text("Author: ")
-                        Text("Markplier")
+                        Text(book.author)
                         Spacer()
                     }
                     HStack{
                         Text("Genre: ")
-                        Text("Cosmic Horror ")
+                        Text(book.genre)
                         Spacer()
                     }
                 }.padding()
@@ -41,5 +42,5 @@ struct BookCard: View {
 }
 
 #Preview {
-    BookCard()
+    BookCard(book: Book(title: "Test", author: "Test", image: "Test", genre: "Test", description: "Test"))
 }

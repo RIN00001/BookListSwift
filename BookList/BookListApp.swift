@@ -9,9 +9,14 @@ import SwiftUI
 
 @main
 struct BookListApp: App {
+    @StateObject var bookViewModel = BookViewModel()
+    @StateObject var dailyReadViewModel = DailyReadViewModel()
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            mainView()
+                .environmentObject(bookViewModel)
+                .environmentObject(dailyReadViewModel)
         }
     }
 }

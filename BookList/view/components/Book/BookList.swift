@@ -10,17 +10,20 @@ import SwiftUI
 struct BookList: View {
     @State var isAddingBook: Bool = false
     @State var searchText: String = ""
+    
+    @EnvironmentObject var bookViewModel: BookViewModel
+    
     var body: some View {
         NavigationStack{
             ScrollView{
                 VStack(spacing: 10){
-                    ForEach(1..<10){ _ in
-                        BookCard()
+                    ForEach(bookViewModel.filterBooks(byTitle: searchText)){ _ in
+                        BookCard(book: <#T##Book#>)
                     }
                 }
             }
             .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always))
-            .navigationDestination(isPresented: $isAddingBook, destination: {AddBookView()})
+            .navigationDestination(isPresented: $isAddingBook, destination: {AddBookView(isAddBook: $isAddingBook)})
             .navigationTitle("BookList")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar{
@@ -33,4 +36,5 @@ struct BookList: View {
 }
 #Preview {
     BookList()
+        .environmentObject(BookViewModel())
 }
